@@ -1,0 +1,41 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(operator, "Оператор", "Работает с пациентами, вводит данные в систему")
+Person(user, "Бизнес-пользователь", "Аналитики, менеджеры, сотрудники клиник")
+Person(dev, "Технические специалисты", "Разработчики, администраторы, аналитики данных")
+
+
+System_Boundary(s1, "Будущее 2.0") {
+
+  ContainerDb(legacyDWH, "Legacy DWH", "SQL Server", "Хранение исторических данных")
+  ContainerDb(dataLake, "Data Lake", "S3 + Apache Iceberg", "Хранение сырых и подготовленных данных")
+  ContainerDb(clickhouse, "ClickHouse", "OLAP база", "Хранение агрегатов и аналитических данных")
+  Container(biPortal, "Портал самообслуживания", "Web App", "Конструирование и просмотр отчётов")
+  System(metabase,  "BI-витрины", "Power-BI / Metabase / Grafana - Витрины данных по доменам", "", "")
+  Container(apiGateway, "Data API Gateway", "Spring Boot", "Единая точка доступа к данным")
+  Container(metadataCatalog, "Каталог данных", "Web App + API", "Поиск и описание датасетов")
+  System(domains, "Доменные сервисы", "Медицинский, Финансовый, ИИ-сервисы, Оборудование, Фармацевтический","", "Mictoservices")
+
+}
+
+Rel(user, biPortal, "Создаёт и просматривает отчёты")
+Rel(user, metabase, "Дашборды по доменам")
+Rel(operator, domains, "Обращается к UI-доменного сервиса")
+Rel(dev, metabase, "Технические дашборды, мониторинг")
+Rel(biPortal, apiGateway, "Запрос витрин данных")
+Rel(apiGateway, metabase, "Прямая интеграция")
+Rel(apiGateway, clickhouse, "Доступ к агрегатам")
+Rel(apiGateway, dataLake, "Доступ к подготовленным данным")
+Rel(metadataCatalog, biPortal, "Навигация по доступным данным")
+Rel(domains, dataLake, "Публикация сырых и обогащённых данных")
+Rel(domains, clickhouse, "Публикация агрегатов")
+Rel(domains, metadataCatalog, "Регистрация продуктов данных")
+Rel(legacyDWH, dataLake, "Миграция данных (частично)")
+Rel(legacyDWH, domains, "Kafka + Debesium")
+Rel(domains, legacyDWH,  "ACL/SQL ")
+
+
+
+
+@enduml

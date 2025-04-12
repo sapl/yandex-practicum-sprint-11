@@ -1,0 +1,40 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+Person(user, "Бизнес-пользователь", "Работает с аналитикой и витринами")
+
+System(medical, "Медицинский домен", "Хранение медицинских данных")
+System(ai, "ИИ-сервисы", "Обработка медицинских данных и генерация моделей")
+System(fintech, "Финансовый домен", "Кредиты, транзакции, счета")
+System(pharma, "Фармацевтический домен", "Продажа и логистика медикаментов")
+System(devices, "Оборудование", "Медицинские устройства и телеметрия")
+System(legacy, "Legacy DWH", "Исторические данные, SQL Server 2008")
+System(bi, "BI/Аналитика", "Метабейс, витрины, отчёты")
+
+System(dataLake, "Data Lake (S3 + Apache Iceberg)", "Хранилище сырых и подготовленных данных")
+System(clickhouse, "OLAP", "Clickhouse база для агрегатов")
+
+Rel(user, bi, "Создаёт и просматривает отчёты")
+
+Rel(medical, ai, "Передаёт медицинские данные")
+Rel(ai, medical, "Отправляет предсказания и модели")
+
+Rel(medical, dataLake, "Публикует сырые медицинские данные")
+Rel(devices, medical, "Передаёт телеметрию")
+Rel(devices, dataLake, "Сохраняет телеметрию")
+
+Rel(fintech, dataLake, "Публикует транзакционные данные")
+Rel(pharma, dataLake, "Публикует данные о поставках и продажах")
+
+Rel(dataLake, clickhouse, "Передаёт очищенные/подготовленные датасеты")
+
+Rel(medical, clickhouse, "Публикует агрегаты (без чувствительных данных)")
+Rel(fintech, clickhouse, "Публикует агрегаты")
+Rel(pharma, clickhouse, "Публикует агрегаты")
+
+Rel(legacy, dataLake, "Экспортирует исторические данные")
+Rel(legacy, clickhouse, "Экспортирует агрегаты")
+
+Rel(clickhouse, bi, "Предоставляет витрины и агрегаты")
+
+@enduml
