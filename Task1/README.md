@@ -36,7 +36,7 @@
 
 ## Архитектура системы через год
 
-Файл PlantUML: [container_diagram.puml](container_diagram.puml)
+Файл PlantUML: [container_diagram.puml](container_diagram.png)
 
 ### Используем подход Data Mesh
 

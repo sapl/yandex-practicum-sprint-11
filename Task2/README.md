@@ -25,7 +25,7 @@
 
 ## Потоки данных (DFD)
 
-См. диаграмму: [dfd_architecture.puml](dfd_architecture.puml)
+См. диаграмму: [dfd_architecture.puml](dfd_architecture.png)
 
 - Данные пациентов → Медицинский домен
 - Медицинские данные ↔ ИИ-домен
